@@ -1,0 +1,81 @@
+Code à insérer dans le plugin  woocommerce upload files
+
+Ajout du bouton de visualisation
+photoswitch\wp-content\plugins\woocommerce-upload-files\template\checkout_cart_product_page_template.php
+ligne 802
+<button class="button visual_button wcuf_visual_button" data-id="wcufuploadedfile_<?php echo $file_fields['id']."-".$product_id;?>"> Visualiser </button><!--fan-develop ajout du bouton de visualisation-->
+
+
+Récupération l'url du fichier uploadé
+photoswitch\wp-content\plugins\woocommerce-upload-files\classes\com\WCUF_File.php
+
+ligne 357
+    //fan-develop
+    //récupérer l'url du fichier uploadé
+    function ajax_visual_single_file ()
+    {
+        global $wcuf_session_model;
+        $wcuf_upload_unique_name = isset($_POST['id']) ? $_POST['id']:null;
+        $file= $this->get_temp_url();
+    
+        if(isset($wcuf_upload_unique_name))
+        {
+            $file.= $wcuf_session_model->get_item_data($wcuf_upload_unique_name, $is_order_detail_page)['file_temp_name'][0];
+            var_dump($file);
+            return $file;
+        }
+        wp_die();
+    }
+    //fan-develop
+
+Affichage du fichier en superposition
+photoswitch\wp-content\plugins\woocommerce-upload-files\js\wcuf-frontend-cart-checkout-product-page_fr_FR.js
+Ligne 20
+var wcuf_ajax_visual_action = "visual_single_file";//fan-develop
+
+ligne 93
+jQuery(document).on('click','.visual_button', wcuf_visual_file); //fan-develop
+
+ligne 169
+//fan-develop
+function wcuf_visual_file(event) 
+{
+    event.preventDefault();  
+    var id = jQuery(event.target).data('id');
+
+   jQuery.post( wcuf_ajaxurl , { action: wcuf_ajax_visual_action, id: id} )
+       .done(function(data) { 
+       var url_image = JSON.stringify(data);
+    var result = url_image.indexOf("jpeg");
+       if(result!=-1){
+           const re = /jpeg/g;
+           re.test(url_image);
+           url_image= RegExp.leftContext+'jpeg';
+       }
+       else{
+           const rege = /jpg/g;
+           rege.test(url_image);
+           url_image= RegExp.leftContext+'jpg';
+
+       }
+ 
+       const reg = /https/g;
+        reg.test( url_image);
+        url_image=RegExp.rightContext; 
+
+        url_image = 'https'+url_image;
+
+        document.getElementById("photo_output").src = url_image;
+       
+        //    jQuery('#photo_output img').attr('src',url_image);
+    
+          elementorProFrontend.modules.popup.closePopup( {}, event );
+     })
+    .fail(function() { 
+        alert('failed'); 
+    });
+    return false;
+}
+
+//fan-develop
+

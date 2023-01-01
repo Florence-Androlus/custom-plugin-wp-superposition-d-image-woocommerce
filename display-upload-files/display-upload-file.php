@@ -3,7 +3,7 @@
 * @wordpress-plugin
 * Plugin Name: Display Upload Files 
 * Description:       Affiche les différents téléchargement à l'emplacement voulu
-* Version:           1.0.2
+* Version:           1.0.3
 * Author:            Fan-Develop
 * Author URI:        https://fan-develop.fr
 * Requires at least: 5.9
